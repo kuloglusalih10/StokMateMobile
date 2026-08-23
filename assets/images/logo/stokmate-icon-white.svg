@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="570" viewBox="0 0 127.00 141.50" fill="none">
+<title>StokMate</title>
+<g transform="translate(-36.500 -28.000) scale(1.00000)" fill="none" stroke="#FFFFFF">
+<path d="M40 74 L100 40 L160 74" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
+<g stroke="none" fill="#FFFFFF">
+<path d="M62 75 A9 9 0 0 1 80 75 L80 96.667 L62 86.467 Z" opacity="0.42"/>
+<path d="M91 57 A9 9 0 0 1 109 57 L109 102.9 L100 108 L91 102.9 Z" opacity="0.7"/>
+<path d="M120 37 A9 9 0 0 1 138 37 L138 86.467 L120 96.667 Z"/>
+</g>
+<path d="M160 74 L100 108 L100 166 L160 132 Z" fill="#FFFFFF" stroke="none" opacity="0.12"/>
+<path d="M40 74 L100 108 L100 166 L40 132 Z" stroke-width="7" stroke-linejoin="round"/>
+<path d="M160 74 L100 108 L100 166 L160 132 Z" stroke-width="7" stroke-linejoin="round"/>
+</g>
+</svg>
