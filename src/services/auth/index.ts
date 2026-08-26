@@ -1,17 +1,5 @@
 import { request } from '../request';
-
-type AuthUser = {
-  id: number;
-  email: string;
-  fullName: string;
-};
-
-type AuthResponse = {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: string;
-  user: AuthUser;
-};
+import type { AuthResponse, AuthUser } from '@/types';
 
 export const login = (email: string, password: string) =>
   request<AuthResponse>('auth/login', 'POST', { email, password });

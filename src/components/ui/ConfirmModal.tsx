@@ -3,19 +3,11 @@ import { X } from 'lucide-react-native';
 
 import { Colors } from '@/constants';
 import { hexWithAlpha } from '@/utils';
+import type { ConfirmModalProps } from '@/types';
+
+export type { ConfirmModalProps } from '@/types';
 
 const danger = '#DC2F2F';
-
-export type ConfirmModalProps = {
-  visible: boolean;
-  title: string;
-  message: string;
-  cancelText?: string;
-  confirmText?: string;
-  destructive?: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-};
 
 export function ConfirmModal({
   visible,

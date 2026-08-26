@@ -6,7 +6,7 @@ import { PackageX } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { getCategoryVisual, neutralCategoryVisual } from '@/lib/categoryVisuals';
 import { formatPriceFromKurus } from '@/utils';
-import type { Product } from '@/services/products';
+import type { Product } from '@/types';
 
 const cardColors = {
   border: 'rgba(14, 15, 12, 0.06)',

@@ -9,7 +9,8 @@ import { Minus, Plus, TriangleAlert, X } from 'lucide-react-native';
 
 import { Colors } from '@/constants';
 import { hexWithAlpha } from '@/utils';
-import { addProductStockEntry, updateProductStock, type ProductDetail } from '@/services/products';
+import { addProductStockEntry, updateProductStock } from '@/services/products';
+import type { ProductDetail } from '@/types';
 
 const warning = '#D08010';
 const danger = '#DC2F2F';

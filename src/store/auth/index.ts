@@ -4,25 +4,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { API_BASE_URL } from '@/config';
-
-type AuthUser = {
-  id: number;
-  email: string;
-  fullName: string;
-};
-
-type AuthState = {
-  accessToken: string | null;
-  refreshToken: string | null;
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  _hasHydrated: boolean;
-  isSessionLoading: boolean;
-  signIn: (accessToken: string, refreshToken: string, user: AuthUser) => void;
-  signOut: () => void;
-  checkSession: () => Promise<void>;
-  setHasHydrated: (value: boolean) => void;
-};
+import type { AuthState } from '@/types';
 
 export const useAuthStore = create(
   persist<AuthState>(

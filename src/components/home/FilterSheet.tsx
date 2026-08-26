@@ -10,15 +10,9 @@ import { Check, LayoutGrid, X, type LucideIcon } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { neutralCategoryVisual } from '@/lib/categoryVisuals';
 import { hexWithAlpha } from '@/utils';
+import type { FilterOption } from '@/types';
 
-export type FilterOption = {
-  id: number;
-  name: string;
-  count: number;
-  icon?: LucideIcon;
-  iconBg?: string;
-  iconFg?: string;
-};
+export type { FilterOption } from '@/types';
 
 type Props = {
   visible: boolean;

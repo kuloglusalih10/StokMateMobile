@@ -24,7 +24,7 @@ import { formatPriceFromKurus, formatRelativeTime, hexWithAlpha } from '@/utils'
 import { toast } from '@/lib/toast';
 import { getCategoryVisual, neutralCategoryVisual } from '@/lib/categoryVisuals';
 import { getProductById, getProductLogs } from '@/services/products';
-import type { ActivityLog, ActivityLogAction, ProductDetail } from '@/services/products';
+import type { ActivityLog, ActivityLogAction, ProductDetail } from '@/types';
 import { StockUpdateSheet } from '@/components/product/StockUpdateSheet';
 
 const cardColors = {

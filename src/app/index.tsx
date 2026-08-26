@@ -21,10 +21,10 @@ import { toast } from '@/lib/toast';
 import { logout } from '@/services/auth';
 import { useAuthStore } from '@/store/auth';
 import { getProducts, getProductsBreakdown } from '@/services/products';
-import type { Product, ProductsBreakdown, StockStatus } from '@/services/products';
+import type { FilterOption, Product, ProductsBreakdown, StockStatus } from '@/types';
 import { ProductCard } from '@/components/home/ProductCard';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
-import { FilterSheet, type FilterOption } from '@/components/home/FilterSheet';
+import { FilterSheet } from '@/components/home/FilterSheet';
 import { getCategoryVisual } from '@/lib/categoryVisuals';
 import StokMateIcon from '@/assets/images/logo/stokmate-icon-black.svg';
 

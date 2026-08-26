@@ -2,8 +2,7 @@ import axios, { type AxiosRequestConfig, type Method } from 'axios';
 
 import { API_BASE_URL } from '@/config';
 import { useAuthStore } from '@/store/auth';
-
-type ApiResult<T> = { res: true; data: T } | { res: false; message: string };
+import type { ApiResult } from '@/types';
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
