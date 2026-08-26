@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="176" viewBox="0 0 230 176"
+     fill="none" color="#C6F24E" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"
+     role="img" aria-label="İzometrik koli istifi">
+  <title>StokMate — izometrik koli deseni</title>
+
+  <!-- Arkadaki koli -->
+  <g opacity="0.16">
+    <path d="M6 103 L40 86 L74 103 L40 120 Z"/>
+    <path d="M6 103 V137 L40 154 V120"/>
+    <path d="M74 103 V137 L40 154 V120"/>
+  </g>
+
+  <!-- Ortadaki koli -->
+  <g opacity="0.14">
+    <path d="M78 103 L112 86 L146 103 L112 120 Z"/>
+    <path d="M78 103 V137 L112 154 V120"/>
+    <path d="M146 103 V137 L112 154 V120"/>
+  </g>
+
+  <!-- Üstteki koli (vurgulu) -->
+  <g opacity="0.30">
+    <path d="M42 69 L76 52 L110 69 L76 86 Z"/>
+    <path d="M42 69 V103 L76 120 V86"/>
+    <path d="M110 69 V103 L76 120 V86"/>
+  </g>
+
+  <!-- Sağdaki uzak koli -->
+  <g opacity="0.10">
+    <path d="M150 103 L184 86 L218 103 L184 120 Z"/>
+    <path d="M150 103 V137 L184 154 V120"/>
+    <path d="M218 103 V137 L184 154 V120"/>
+  </g>
+</svg>
