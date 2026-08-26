@@ -8,10 +8,6 @@ import { getCategoryVisual, neutralCategoryVisual } from '@/lib/categoryVisuals'
 import { formatPriceFromKurus } from '@/utils';
 import type { Product } from '@/services/products';
 
-/* ---------------------------------------------------------------
-   Tema — kart için türetilen tonlar
---------------------------------------------------------------- */
-
 const cardColors = {
   border: 'rgba(14, 15, 12, 0.06)',
   textMuted: '#7A7D70',
@@ -27,10 +23,6 @@ const radius = {
   lg: 16,
 } as const;
 
-/* ---------------------------------------------------------------
-   Stok durumu
---------------------------------------------------------------- */
-
 type StockState = 'ok' | 'critical' | 'out';
 
 const getStockState = (stock: number, minStock: number): StockState => {
@@ -44,10 +36,6 @@ const stockTone = {
   critical: { value: cardColors.warning, label: cardColors.warning, text: 'kritik' },
   out: { value: cardColors.danger, label: cardColors.danger, text: 'yok' },
 } as const;
-
-/* ---------------------------------------------------------------
-   Bileşen
---------------------------------------------------------------- */
 
 type Props = {
   product: Product;
@@ -120,10 +108,6 @@ function ProductCardComponent({ product, onPress }: Props) {
 }
 
 export const ProductCard = memo(ProductCardComponent);
-
-/* ---------------------------------------------------------------
-   Stiller
---------------------------------------------------------------- */
 
 const S = StyleSheet.create({
   card: {

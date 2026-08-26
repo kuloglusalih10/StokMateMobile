@@ -32,10 +32,6 @@ type Props = {
   onUpdated: () => void;
 };
 
-/**
- * Bilgilendirme banner'ının görünme/kaybolma geçişini yumuşatan sarmalayıcı. `show` false olduğunda
- * bileşen hemen kaldırılmaz; sönme animasyonu bitene kadar DOM'da (mount) kalır.
- */
 function AnimatedBanner({
   show,
   style,

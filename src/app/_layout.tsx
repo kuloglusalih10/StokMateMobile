@@ -20,9 +20,6 @@ import { Colors } from '@/constants';
 import { NAV_THEME } from '@/lib/theme';
 import { useAuthStore } from '@/store/auth';
 
-// Splash animasyonunu ilk açılışta tam süresiyle, sonraki açılışlarda kısaltılmış halde oynatmak
-// için kullanılan bayrak. SecureStore zaten projede (auth token'ları için) kullanıldığından yeni
-// bir native bağımlılık (AsyncStorage vb.) eklemeye gerek kalmadı.
 const SPLASH_SEEN_KEY = 'splash_seen_v2';
 
 SplashScreen.preventAutoHideAsync();
@@ -43,9 +40,7 @@ export default function RootLayout() {
   const isSessionLoading = useAuthStore((state) => state.isSessionLoading);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  // undefined: SecureStore'dan henüz okunmadı, true/false: splash daha önce görülmüş mü.
   const [splashSeen, setSplashSeen] = useState<boolean | undefined>(undefined);
-  // Animasyonlu splash (giriş + çıkış) tamamen bitti mi — bitince overlay kaldırılır.
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
@@ -54,7 +49,6 @@ export default function RootLayout() {
       .catch(() => setSplashSeen(false));
   }, []);
 
-  // Fontlar ve oturum bilgisi hazır mı — animasyonlu splash bu true olmadan kapanmıyor.
   const appReady = fontsLoaded && hasHydrated && !isSessionLoading;
 
   const handleSplashFinish = useCallback(() => {
@@ -62,15 +56,6 @@ export default function RootLayout() {
     SecureStore.setItemAsync(SPLASH_SEEN_KEY, '1').catch(() => {});
   }, []);
 
-  // Native splash'i, uygulama ilk kareyi çizer çizmez kaldırıyoruz — altında AnimatedSplash zaten
-  // aynı zeminle (Colors.secondary) durduğu için kullanıcı bir renk atlaması/geçiş görmüyor.
-  //
-  // ÖNEMLİ: Router ağacını (Stack) hazır olana kadar unmount bırakmıyoruz. Daha önce burada
-  // `if (!isReady) return null;` deseni vardı; bu, expo-router'ın ilk URL/deep-link çözümlemesini
-  // henüz mount olmamış bir navigator üstünde denemesine ve "Can't perform a React state update on
-  // a component that hasn't mounted yet" uyarısına yol açıyordu. Artık Stack her zaman ilk render'da
-  // mount oluyor; hazırlık bitene kadar üstünü kaplayan opak AnimatedSplash örtüyor, bu yüzden
-  // kullanıcı hazır olmayan bir ekran görmüyor.
   const hasHiddenNativeSplash = useRef(false);
   const onRootLayout = useCallback(() => {
     if (hasHiddenNativeSplash.current) return;

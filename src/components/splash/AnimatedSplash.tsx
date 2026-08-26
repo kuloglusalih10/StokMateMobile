@@ -17,17 +17,11 @@ import { Colors } from '@/constants';
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedG = Animated.createAnimatedComponent(G);
 
-// Path uzunlukları — strokeDasharray/strokeDashoffset ile "çizilme" efekti için.
-// Gerçek StokMate logosunun (assets/images/logo/stokmate-icon-lime.svg) path'leriyle birebir aynı
-// geometriyi kullanıyoruz, sadece viewBox'ı çeviri (translate) grubu olmadan doğrudan tanımlıyoruz.
 const LEN_ROOF = 140;
 const LEN_FACE = 260;
 
-// Çubukların taban y koordinatları — scaleY animasyonunun kendi tabanından büyümesi için gerekli.
 const BAR_BASE = { first: 96.667, second: 108, third: 96.667 };
 
-// Tam hızlı (ilk açılış) zaman çizelgesi — milisaniye. Toplam sahne süresi ~4.8 sn.
-// `short` modunda (SHORT_FACTOR ile) tamamı ölçeklenip ~2.2 sn'ye iner.
 const BASE = {
   roofDelay: 240,
   roofDuration: 800,
@@ -48,52 +42,33 @@ const BASE = {
   stageDuration: 640,
 };
 
-// İkinci ve sonraki açılışlarda tüm süreler bu katsayıyla kısaltılır (~2.2 sn'ye iner).
 const SHORT_FACTOR = 0.4583;
 
 type Props = {
-  /** Giriş animasyonu bitip `ready` true olduğunda (ikisi de gerçekleşince) çağrılır. */
   onFinish?: () => void;
-  /**
-   * true: daha önce görülmüş splash → kısaltılmış animasyon.
-   * false: ilk açılış → tam süreli animasyon.
-   * undefined: henüz bilinmiyor (ör. SecureStore okunuyor) → animasyon başlamaz, bekler.
-   */
   short?: boolean;
-  /**
-   * Uygulama (fontlar, oturum bilgisi vb.) hazır mı. Giriş animasyonu bitse bile `ready` false
-   * olduğu sürece sahne son haliyle (logo tamamlanmış, yazı görünür) beklemeye devam eder — böylece
-   * arkadaki ekran hazır olmadan asla açığa çıkmaz.
-   */
   ready?: boolean;
 };
 
 export default function AnimatedSplash({ onFinish, short, ready = true }: Props) {
-  // Çizgi çizimi ilerlemesi: 1 = hiç çizilmemiş, 0 = tamamen çizilmiş.
   const roof = useSharedValue(1);
   const faceL = useSharedValue(1);
   const faceR = useSharedValue(1);
 
-  // Çubukların dikey ölçeği: 0 = görünmez, 1 = tam boy.
   const bar1 = useSharedValue(0);
   const bar2 = useSharedValue(0);
   const bar3 = useSharedValue(0);
 
-  // Sağ yüzün dolgu opaklığı ve "StokMate" yazısının belirme ilerlemesi.
   const fill = useSharedValue(0);
   const word = useSharedValue(0);
 
-  // Tüm sahnenin opaklığı — çıkışta 0'a iner.
   const stage = useSharedValue(1);
 
-  // Giriş animasyonunun (logo + yazı) doğal süresi doldu mu.
   const [entranceDone, setEntranceDone] = useState(false);
-  // Sahne kapanışında kullanılacak (short'a göre ölçeklenmiş) süre — iki effect arasında paylaşılır.
   const stageDurationRef = useRef(BASE.stageDuration);
 
-  // 1) Giriş animasyonu: `short` bilinir bilinmez (undefined değilse) bir kez planlanır.
   useEffect(() => {
-    if (short === undefined) return; // SecureStore'dan henüz okunmadı — bekle, yarıda başlatma.
+    if (short === undefined) return;
 
     const factor = short ? SHORT_FACTOR : 1;
     const t = (ms: number) => Math.round(ms * factor);
@@ -102,7 +77,6 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
     const draw = (durationMs: number) =>
       withTiming(0, { duration: t(durationMs), easing: Easing.out(Easing.cubic) });
 
-    // Çubuk yükselişi: hedefi hafif aşıp geri oturuyor, mekanik değil canlı hissettiriyor.
     const pop = () =>
       withSequence(
         withTiming(1.06, { duration: t(BASE.popUpDuration), easing: Easing.out(Easing.back(2)) }),
@@ -125,10 +99,8 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
 
     const entranceTimer = setTimeout(() => setEntranceDone(true), t(BASE.stageDelay));
     return () => clearTimeout(entranceTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [short]);
 
-  // 2) Sahne kapanışı: yalnızca giriş animasyonu bitmiş VE uygulama hazırsa tetiklenir.
   useEffect(() => {
     if (!entranceDone || !ready) return;
 
@@ -137,7 +109,6 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
         runOnJS(onFinish)();
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entranceDone, ready]);
 
   const roofProps = useAnimatedProps(() => ({ strokeDashoffset: LEN_ROOF * roof.value }));
@@ -145,8 +116,6 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
   const faceRProps = useAnimatedProps(() => ({ strokeDashoffset: LEN_FACE * faceR.value }));
   const fillProps = useAnimatedProps(() => ({ opacity: 0.12 * fill.value }));
 
-  // Her çubuk için ayrı useAnimatedProps — SVG'de scale her zaman (0,0) merkezinden uygulandığından,
-  // çubuğun kendi tabanına gidip ölçekleyip geri dönüyoruz: translate(taban) scale(1, v) translate(-taban).
   const bar1Props = useAnimatedProps(() => ({
     transform: `translate(0 ${BAR_BASE.first}) scale(1 ${bar1.value}) translate(0 ${-BAR_BASE.first})`,
     opacity: bar1.value > 0 ? 1 : 0,
@@ -170,7 +139,6 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
     <View style={S.root} pointerEvents="none">
       <Animated.View style={[S.center, stageStyle]}>
         <Svg viewBox="20 17 160 164" width={150} height={154} fill="none">
-          {/* Kutunun üst V çizgisi */}
           <AnimatedPath
             d="M40 74 L100 40 L160 74"
             stroke={Colors.primary}
@@ -182,7 +150,6 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
             animatedProps={roofProps}
           />
 
-          {/* Kutudan yükselen üç çubuk */}
           <AnimatedG animatedProps={bar1Props}>
             <Path d="M62 75 A9 9 0 0 1 80 75 L80 96.667 L62 86.467 Z" fill={Colors.primary} opacity={0.42} />
           </AnimatedG>
@@ -193,10 +160,8 @@ export default function AnimatedSplash({ onFinish, short, ready = true }: Props)
             <Path d="M120 37 A9 9 0 0 1 138 37 L138 86.467 L120 96.667 Z" fill={Colors.primary} />
           </AnimatedG>
 
-          {/* Sağ yüzün soluk dolgusu */}
           <AnimatedPath d="M160 74 L100 108 L100 166 L160 132 Z" fill={Colors.primary} animatedProps={fillProps} />
 
-          {/* Sol ve sağ yüzün çizgileri */}
           <AnimatedPath
             d="M40 74 L100 108 L100 166 L40 132 Z"
             stroke={Colors.primary}

@@ -17,7 +17,6 @@ export type CategoryVisual = {
   icon: LucideIcon;
 };
 
-/** Kategori renkleri — web panelindeki "Tanımlar" renkleriyle aynı aile. */
 const categoryPalette: Record<string, CategoryVisual> = {
   icecek: { bg: '#E4EEFB', fg: '#1F5896', icon: CupSoda },
   kahvaltilik: { bg: '#FBEEDA', fg: '#8A560A', icon: Coffee },

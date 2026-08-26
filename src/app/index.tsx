@@ -133,7 +133,6 @@ export default function Home() {
 
   useEffect(() => {
     loadProducts(1, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, categoryId, brandId, stockFilter]);
 
   useEffect(() => {

@@ -93,11 +93,6 @@ export type ProductsBreakdownQuery = {
   brandId?: number;
 };
 
-/**
- * `categoryId`/`brandId` verilirse yanıttaki üst seviye toplam alanlar (totalProducts,
- * lowStockCount, outOfStockCount vb.) yalnızca o kategori/markaya göre hesaplanır — ürün listesi
- * ekranındaki filtre rozetlerinin seçili filtreye göre doğru adet göstermesi için kullanılır.
- */
 export const getProductsBreakdown = (query: ProductsBreakdownQuery = {}) =>
   request<ProductsBreakdown>(`products/stats/breakdown${buildQueryString(query)}`, 'GET');
 
