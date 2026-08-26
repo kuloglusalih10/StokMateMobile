@@ -1,9 +1,20 @@
-import { useAuthStore } from '@/store/auth';
+import axios, { type AxiosRequestConfig, type Method } from 'axios';
+
 import { API_BASE_URL } from '@/config';
-import axios from 'axios';
+import { useAuthStore } from '@/store/auth';
+
+type ApiResult<T> = { res: true; data: T } | { res: false; message: string };
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
+
+const extractErrorMessage = (error: any) => {
+  if (typeof error?.response?.data === 'string' && error.response.data.length > 0) {
+    return error.response.data;
+  }
+
+  return error?.message ?? 'Beklenmeyen bir hata oluştu.';
+};
 
 const refreshAccessTokenSilently = async (): Promise<string | null> => {
   if (isRefreshing && refreshPromise) {
@@ -13,36 +24,21 @@ const refreshAccessTokenSilently = async (): Promise<string | null> => {
   isRefreshing = true;
 
   refreshPromise = (async () => {
+    const { refreshToken, signIn, signOut } = useAuthStore.getState();
+
+    if (!refreshToken) {
+      signOut();
+      return null;
+    }
+
     try {
-      const { refreshToken } = useAuthStore.getState();
+      const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
 
-      if (!refreshToken) {
-        useAuthStore.getState().signOut();
-        return null;
-      }
+      signIn(response.data.accessToken, response.data.refreshToken, response.data.user);
 
-      const response = await axios.post(
-        `${API_BASE_URL}/auth/refresh`,
-        { refresh_token: refreshToken },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 10000,
-        }
-      );
-
-      if (response?.data) {
-        const newAccessToken = response.data.access_token;
-        const newRefreshToken = response.data.refresh_token;
-
-        useAuthStore.getState().signIn(newAccessToken, newRefreshToken);
-
-        return newAccessToken;
-      } else {
-        useAuthStore.getState().signOut();
-        return null;
-      }
+      return response.data.accessToken as string;
     } catch {
-      useAuthStore.getState().signOut();
+      signOut();
       return null;
     } finally {
       isRefreshing = false;
@@ -53,98 +49,43 @@ const refreshAccessTokenSilently = async (): Promise<string | null> => {
   return refreshPromise;
 };
 
-export const request = async (
+export const request = async <T>(
   url: string,
-  method: string,
-  token: { payload?: string } | null = null,
-  data = null,
-  contentType = 'application/json'
-) => {
+  method: Method,
+  data?: unknown
+): Promise<ApiResult<T>> => {
   const { accessToken } = useAuthStore.getState();
 
+  const config: AxiosRequestConfig = {
+    method,
+    url: `${API_BASE_URL}/${url}`,
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    data,
+  };
+
   try {
-    const res = token?.payload ?? accessToken;
-    const tkn = res;
-
-    const apiUrl = `${API_BASE_URL}/${url}`;
-
-    let config: {
-      method: string;
-      maxBodyLength: number;
-      url: string;
-      headers: { 'Content-Type': string; Authorization: string };
-      data?: any;
-    } = {
-      method,
-      maxBodyLength: Infinity,
-      url: apiUrl,
-      headers: {
-        'Content-Type': contentType,
-        Authorization: `Bearer ${tkn}`,
-      },
-    };
-
-    if (method == 'POST' || method == 'PUT' || method == 'PATCH') {
-      config.data = data ?? {};
-    }
-
-    const response = await axios.request(config);
-
-    return {
-      res: true,
-      data: response.data,
-    };
+    const response = await axios.request<T>(config);
+    return { res: true, data: response.data };
   } catch (error: any) {
-    if (error?.response?.data?.code == 'TOKEN_EXPIRED') {
+    if (error?.response?.status === 401 && accessToken) {
       const newAccessToken = await refreshAccessTokenSilently();
 
       if (newAccessToken) {
         try {
-          const retryApiUrl = `${API_BASE_URL}/${url}`;
+          const retryResponse = await axios.request<T>({
+            ...config,
+            headers: { Authorization: `Bearer ${newAccessToken}` },
+          });
 
-          let retryConfig: {
-            method: string;
-            maxBodyLength: number;
-            url: string;
-            headers: { 'Content-Type': string; Authorization: string };
-            data?: any;
-          } = {
-            method,
-            maxBodyLength: Infinity,
-            url: retryApiUrl,
-            headers: {
-              'Content-Type': contentType,
-              Authorization: `Bearer ${newAccessToken}`,
-            },
-          };
-
-          if (method == 'POST' || method == 'PUT' || method == 'PATCH') {
-            retryConfig.data = data ?? {};
-          }
-
-          const retryResponse = await axios.request(retryConfig);
-
-          return {
-            res: true,
-            data: retryResponse.data,
-          };
-        } catch (retryError: any) {
-          return {
-            res: false,
-            message: retryError?.response?.data?.message ?? retryError.message,
-          };
+          return { res: true, data: retryResponse.data };
+        } catch (retryError) {
+          return { res: false, message: extractErrorMessage(retryError) };
         }
       }
 
-      return {
-        res: false,
-        message: 'Oturum süresi doldu. Lütfen tekrar giriş yapın.',
-      };
+      return { res: false, message: 'Oturum süresi doldu. Lütfen tekrar giriş yapın.' };
     }
 
-    return {
-      res: false,
-      message: error?.response?.data?.message ?? error.message,
-    };
+    return { res: false, message: extractErrorMessage(error) };
   }
 };
