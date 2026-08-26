@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { ChevronDown, LogOut, Package, Search } from 'lucide-react-native';
 
 import { Colors } from '@/constants';
@@ -46,6 +47,7 @@ const getInitials = (fullName?: string) => {
 
 export default function Home() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const refreshToken = useAuthStore((state) => state.refreshToken);
   const signOut = useAuthStore((state) => state.signOut);
@@ -78,12 +80,15 @@ export default function Home() {
   }, [searchInput]);
 
   const loadBreakdown = useCallback(async () => {
-    const response = await getProductsBreakdown();
+    const response = await getProductsBreakdown({
+      categoryId: categoryId ?? undefined,
+      brandId: brandId ?? undefined,
+    });
 
     if (response.res) {
       setBreakdown(response.data);
     }
-  }, []);
+  }, [categoryId, brandId]);
 
   const loadProducts = useCallback(
     async (pageNum: number, replace: boolean) => {
@@ -294,7 +299,9 @@ export default function Home() {
         <FlatList
           data={products}
           keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => <ProductCard product={item} />}
+          renderItem={({ item }) => (
+            <ProductCard product={item} onPress={(p) => router.push(`/product/${p.id}`)} />
+          )}
           contentContainerStyle={S.listContent}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           onEndReachedThreshold={0.4}

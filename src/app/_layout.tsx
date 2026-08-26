@@ -65,6 +65,7 @@ export default function RootLayout() {
             >
               <Stack.Protected guard={isAuthenticated}>
                 <Stack.Screen name="index" />
+                <Stack.Screen name="product/[id]" options={{ animation: 'slide_from_right' }} />
               </Stack.Protected>
 
               <Stack.Protected guard={!isAuthenticated}>
