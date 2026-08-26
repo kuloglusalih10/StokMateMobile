@@ -42,7 +42,7 @@ export type ProductsQuery = {
   dir?: 'asc' | 'desc';
 };
 
-const buildQueryString = (query: ProductsQuery) => {
+const buildQueryString = (query: Record<string, unknown>) => {
   const params = new URLSearchParams();
 
   Object.entries(query).forEach(([key, value]) => {
@@ -88,4 +88,55 @@ export type ProductsBreakdown = {
   byBrand: BrandBreakdown[];
 };
 
-export const getProductsBreakdown = () => request<ProductsBreakdown>('products/stats/breakdown', 'GET');
+export type ProductsBreakdownQuery = {
+  categoryId?: number;
+  brandId?: number;
+};
+
+/**
+ * `categoryId`/`brandId` verilirse yanıttaki üst seviye toplam alanlar (totalProducts,
+ * lowStockCount, outOfStockCount vb.) yalnızca o kategori/markaya göre hesaplanır — ürün listesi
+ * ekranındaki filtre rozetlerinin seçili filtreye göre doğru adet göstermesi için kullanılır.
+ */
+export const getProductsBreakdown = (query: ProductsBreakdownQuery = {}) =>
+  request<ProductsBreakdown>(`products/stats/breakdown${buildQueryString(query)}`, 'GET');
+
+export type ProductDetail = Product & {
+  supplierId: number;
+  supplierName: string;
+  costPrice: number;
+  description: string;
+  createdAt: string;
+};
+
+export const getProductById = (id: number) => request<ProductDetail>(`products/${id}`, 'GET');
+
+export type ActivityLogAction =
+  | 'Created'
+  | 'Updated'
+  | 'Deleted'
+  | 'StockIn'
+  | 'StockAdjusted'
+  | 'PriceChanged'
+  | 'CostPriceChanged'
+  | 'StatusChanged'
+  | 'FeaturedChanged';
+
+export type ActivityLog = {
+  id: number;
+  action: ActivityLogAction;
+  description: string;
+  quantityDelta: number | null;
+  amountKurus: number | null;
+  createdAt: string;
+};
+
+export const getProductLogs = (id: number, limit = 5) =>
+  request<ActivityLog[]>(`products/${id}/logs?limit=${limit}`, 'GET');
+
+export const updateProductStock = (id: number, stock: number) =>
+  request<Product>(`products/${id}/stock`, 'PATCH', { stock });
+
+export const addProductStockEntry = (id: number, quantity: number) =>
+  request<Product>(`products/${id}/stock-entries`, 'POST', { quantity });
+
