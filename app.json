@@ -8,6 +8,7 @@
     "scheme": "stokmate",
     "userInterfaceStyle": "automatic",
     "android": {
+      "package": "com.stokmate.app",
       "adaptiveIcon": {
         "backgroundColor": "#0E0F0C",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
