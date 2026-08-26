@@ -52,6 +52,13 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      fontFamily: {
+        sans: ['Archivo_400Regular'],
+        'sans-semibold': ['Archivo_600SemiBold'],
+        'sans-extrabold': ['Archivo_800ExtraBold'],
+        mono: ['IBMPlexMono_400Regular'],
+        'mono-medium': ['IBMPlexMono_500Medium'],
+      },
     },
   },
   plugins: [],

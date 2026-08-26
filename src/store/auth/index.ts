@@ -5,13 +5,20 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { API_BASE_URL } from '@/config';
 
+type AuthUser = {
+  id: number;
+  email: string;
+  fullName: string;
+};
+
 type AuthState = {
   accessToken: string | null;
   refreshToken: string | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   _hasHydrated: boolean;
   isSessionLoading: boolean;
-  signIn: (accessToken: string, refreshToken: string) => void;
+  signIn: (accessToken: string, refreshToken: string, user: AuthUser) => void;
   signOut: () => void;
   checkSession: () => Promise<void>;
   setHasHydrated: (value: boolean) => void;
@@ -22,6 +29,7 @@ export const useAuthStore = create(
     (set, get) => ({
       accessToken: null,
       refreshToken: null,
+      user: null,
       isAuthenticated: false,
       isSessionLoading: true,
       _hasHydrated: false,
@@ -30,11 +38,12 @@ export const useAuthStore = create(
         set({ _hasHydrated: value });
       },
 
-      signIn: (access, refresh) =>
+      signIn: (accessToken, refreshToken, user) =>
         set(() => ({
           isAuthenticated: true,
-          accessToken: access,
-          refreshToken: refresh,
+          accessToken,
+          refreshToken,
+          user,
         })),
 
       signOut: () => {
@@ -42,6 +51,7 @@ export const useAuthStore = create(
           isAuthenticated: false,
           accessToken: null,
           refreshToken: null,
+          user: null,
         }));
       },
 
@@ -56,29 +66,20 @@ export const useAuthStore = create(
             return;
           }
 
-          const response = await axios.post(
-            `${API_BASE_URL}/auth/refresh`,
-            { refresh_token: refreshToken },
-            {
-              headers: { 'Content-Type': 'application/json' },
-              timeout: 10000,
-            }
-          );
+          const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
 
-          if (response?.data) {
-            set({
-              isAuthenticated: true,
-              accessToken: response.data.access_token,
-              refreshToken: response.data.refresh_token,
-            });
-          } else {
-            throw new Error('Token yenilenemedi');
-          }
+          set({
+            isAuthenticated: true,
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+            user: response.data.user,
+          });
         } catch {
           set({
             isAuthenticated: false,
             accessToken: null,
             refreshToken: null,
+            user: null,
           });
         } finally {
           set({ isSessionLoading: false });
@@ -97,6 +98,7 @@ export const useAuthStore = create(
         ({
           accessToken: state.accessToken,
           refreshToken: state.refreshToken,
+          user: state.user,
         }) as AuthState,
 
       onRehydrateStorage: () => {

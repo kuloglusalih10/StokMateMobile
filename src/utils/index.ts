@@ -76,3 +76,21 @@ export const formatRelativeTime = (isoString: string): string => {
 
   return date.format('DD/MM/YYYY');
 };
+
+export const formatPriceFromKurus = (kurus: number) => {
+  const lira = kurus / 100;
+
+  return new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(lira);
+};
+
+export const hexWithAlpha = (hex: string, alpha: number) => {
+  const normalized = hex.replace('#', '');
+  const value = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0');
+
+  return `#${normalized}${value}`;
+};
