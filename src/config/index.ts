@@ -1,6 +1,4 @@
-import { Platform } from 'react-native';
-
-const HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
-const API_BASE_URL = `http://${HOST}:5080`;
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://stokmate-api-fspt.onrender.com';
 
 export { API_BASE_URL };
